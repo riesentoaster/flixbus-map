@@ -38,7 +38,8 @@ Measured on the 2026-09-06 feed: 2,276 stops, 1,176 routes, 10,914 segments,
 
 `public/index.html`, one file:
 
-- Leaflet from cdnjs, OpenStreetMap raster tiles.
+- Leaflet from cdnjs, CARTO Positron raster tiles (light grey base map so the
+  green route lines stand out; OSM's default style paints forests green).
 - `L.map(..., {preferCanvas: true})` so thousands of shapes render on canvas.
 - Fetch `data.json`, add one multi-segment `L.polyline` per route and one
   `L.circleMarker` per stop, centred on Europe.
