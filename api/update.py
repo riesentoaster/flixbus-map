@@ -49,26 +49,26 @@ def store(data):
     token = os.environ.get("BLOB_READ_WRITE_TOKEN")
     if not token:
         open("public/data.json", "wb").write(body)
-        return
+        return body
     headers = {
         "authorization": f"Bearer {token}",
         "x-api-version": "12",
         "x-content-type": "application/json",
         "x-add-random-suffix": "0",
         "x-allow-overwrite": "1",
-        "x-cache-control-max-age": "60",  # the minimum; the page adds a cache-buster after an update anyway
+        "x-cache-control-max-age": "60",  # the minimum
     }
     urllib.request.urlopen(urllib.request.Request(BLOB_API, data=body, method="PUT", headers=headers)).close()
+    return body
 
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        data = build()
-        store(data)
+        body = store(build())
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.wfile.write(json.dumps({"updated": data["updated"]}).encode())
+        self.wfile.write(body)
 
 
 if __name__ == "__main__":

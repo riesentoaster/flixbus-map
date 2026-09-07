@@ -4,7 +4,7 @@ A single-page map of every FlixBus and FlixTrain stop in Europe, with straight
 lines between consecutive stops. Click a stop to highlight the routes that serve
 it; click anywhere else to reset. The selected stop is kept in the URL
 (`?stop=WOL`), so links can be shared. The corner box shows when the data was
-last updated; its **Update** button fetches a fresh feed and reloads.
+last updated; its **Update** button fetches a fresh feed and redraws the map.
 
 Data: the public GTFS feed at https://gtfs.gis.flix.tech/gtfs_generic_eu.zip.
 
@@ -40,4 +40,4 @@ from Vercel. The Update button does nothing locally (there is no backend).
    hostname of any blob URL in the store, `<id>.public.blob.vercel-storage.com`).
 4. Deploy. The build downloads the feed and uploads `data.json` to Blob, so
    there is data from the first deploy on. The Update button does the same on
-   demand and reloads the page. Anyone can press it.
+   demand and redraws the map with the result. Anyone can press it.

@@ -49,9 +49,10 @@ Measured on the 2026-09-06 feed: 2,276 stops, 1,176 routes, 10,914 segments,
 - Leaflet from cdnjs, OpenStreetMap raster tiles. Routes are drawn in deep
   purple, a colour OSM's default style never uses, so they stand out.
 - `L.map(..., {preferCanvas: true})` so thousands of shapes render on canvas.
-- Fetch `data.json` (rewritten by Vercel to the blob's public URL), add one
-  multi-segment `L.polyline` per route and one `L.circleMarker` per stop,
-  centred on Europe.
+- Fetch `data.json` (rewritten by Vercel to the blob's public URL) and pass it
+  to `draw(data)`, which clears a layer group and adds one multi-segment
+  `L.polyline` per route and one `L.circleMarker` per stop. The Update button
+  calls `draw` again with the function's response.
 - A `focus(stop)` function recolours every route layer purple or faint grey
   depending on whether it touches `stop` (`null` = all purple) and brings the
   purple ones to the front. Stop markers call it on click with
@@ -68,10 +69,11 @@ No framework, no bundler, no npm.
 - Every Vercel deploy runs `python3 api/update.py` as the build command, which
   uploads fresh data to Blob. So there is always data, from the first deploy on.
 - The Update button POSTs to `/api/update`. The function rebuilds and uploads
-  the data, then returns the new `updated` timestamp. The page reloads with
-  `?v=<timestamp>` appended, which bypasses the CDN's cached copy of
-  `data.json` (Blob's minimum cache time is 60 s); the page drops `v` from the
-  URL again once loaded. Other visitors see the new data within a minute.
+  the data and returns it in the response; the page redraws from that response
+  without reloading, so the presser never sees a cached copy. Other visitors
+  see the new data within a minute (Blob's minimum cache time is 60 s).
+- `data.json` is always fetched plainly and in full; the `?stop=` parameter is
+  purely a frontend filter and never touches the data request.
 - If the download fails during the build, the build fails and Vercel keeps the
   previous deployment and the previous blob. If it fails during a button press,
   the function returns 500 and the button shows "Update failed".
