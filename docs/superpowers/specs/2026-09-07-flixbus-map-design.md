@@ -38,13 +38,13 @@ Measured on the 2026-09-06 feed: 2,276 stops, 1,176 routes, 10,914 segments,
 
 `public/index.html`, one file:
 
-- Leaflet from cdnjs, CARTO Positron raster tiles (light grey base map so the
-  green route lines stand out; OSM's default style paints forests green).
+- Leaflet from cdnjs, OpenStreetMap raster tiles. Routes are drawn in deep
+  purple, a colour OSM's default style never uses, so they stand out.
 - `L.map(..., {preferCanvas: true})` so thousands of shapes render on canvas.
 - Fetch `data.json`, add one multi-segment `L.polyline` per route and one
   `L.circleMarker` per stop, centred on Europe.
-- A `focus(stop)` function recolours every route layer green or grey depending
-  on whether it touches `stop` (`null` = all green). Stop markers call it on
+- A `focus(stop)` function recolours every route layer purple or grey depending
+  on whether it touches `stop` (`null` = all purple). Stop markers call it on
   click with `bubblingMouseEvents: false` so the map's own click handler, which
   calls `focus(null)`, does not also fire.
 
