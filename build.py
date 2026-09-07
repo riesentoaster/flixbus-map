@@ -5,6 +5,7 @@ import json
 import urllib.request
 import zipfile
 from collections import defaultdict
+from datetime import datetime, timezone
 
 URL = "https://gtfs.gis.flix.tech/gtfs_generic_eu.zip"
 
@@ -33,6 +34,7 @@ for trip_id, seq in trips.items():
 used = sorted({s for edges in routes.values() for edge in edges for s in edge})
 index = {s: i for i, s in enumerate(used)}
 data = {
+    "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     "stops": [[round(stops[s][0], 4), round(stops[s][1], 4)] for s in used],
     "routes": [sorted([index[a], index[b]] for a, b in edges) for _, edges in sorted(routes.items())],
 }

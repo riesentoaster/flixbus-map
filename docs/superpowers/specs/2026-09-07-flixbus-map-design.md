@@ -14,6 +14,8 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 - Clicking a stop highlights the routes (GTFS `route_id`) that serve it and
   greys out all others. Clicking another stop moves the focus; clicking
   anywhere else resets it.
+- A small box in the corner shows when the data was built and has an Update
+  button that triggers a rebuild (see Refresh).
 - Nothing else: no names, popups, or search.
 
 ## Data pipeline
@@ -27,7 +29,7 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 5. For each trip, add each consecutive `(stop_a, stop_b)` pair (ordered so a < b)
    to that route's set of segments.
 6. Write `public/data.json`:
-   `{"stops": [[lon, lat], ...], "routes": [[[i, j], ...], ...]}` where `i`, `j`
+   `{"updated": "YYYY-MM-DD HH:MM UTC", "stops": [[lon, lat], ...], "routes": [[[i, j], ...], ...]}` where `i`, `j`
    index into `stops` and each inner list is one route's segments. Coordinates
    rounded to 4 decimals. Only stops that appear in a segment are included.
 
@@ -58,9 +60,12 @@ No framework, no bundler, no npm.
 
 - Every Vercel deploy runs `python3 build.py` (build command in `vercel.json`),
   so each deploy has fresh data. `public/data.json` is gitignored.
-- Daily: a Vercel cron job (`vercel.json` `crons`, once per day, allowed on
-  Hobby) calls `api/cron.py`, which POSTs to a Vercel deploy hook URL read from
-  the `DEPLOY_HOOK_URL` environment variable. That triggers a rebuild.
+- On demand: the page's Update button POSTs to `api/update.py`, which POSTs to
+  a Vercel deploy hook URL read from the `DEPLOY_HOOK_URL` environment
+  variable. That triggers a rebuild; the page tells the user to reload in about
+  a minute. A serverless function cannot write to the deployed files, which is
+  why the update goes through a rebuild rather than running `build.py` directly.
+  The button is public by design; each press costs one build.
 - If the download fails, the build fails and Vercel keeps serving the previous
   deployment. No extra handling needed.
 
@@ -69,8 +74,8 @@ No framework, no bundler, no npm.
 ```
 build.py            data pipeline
 public/index.html   the page
-api/cron.py         daily rebuild trigger
-vercel.json         build command, output dir, cron schedule
+api/update.py       rebuild trigger behind the Update button
+vercel.json         build command, output dir
 .gitignore          public/data.json
 ```
 
