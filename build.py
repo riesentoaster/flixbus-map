@@ -17,24 +17,25 @@ with urllib.request.urlopen(URL) as resp:
     zf = zipfile.ZipFile(io.BytesIO(resp.read()))
 
 stops = {r["stop_id"]: (float(r["stop_lon"]), float(r["stop_lat"])) for r in rows(zf, "stops.txt")}
+route_of = {r["trip_id"]: r["route_id"] for r in rows(zf, "trips.txt")}
 
 trips = defaultdict(list)
 for r in rows(zf, "stop_times.txt"):
     trips[r["trip_id"]].append((int(r["stop_sequence"]), r["stop_id"]))
 
-edges = set()
-for seq in trips.values():
+routes = defaultdict(set)  # route_id -> set of (stop_a, stop_b) segments
+for trip_id, seq in trips.items():
     ids = [stop_id for _, stop_id in sorted(seq)]
     for a, b in zip(ids, ids[1:]):
         if a != b:
-            edges.add((min(a, b), max(a, b)))
+            routes[route_of[trip_id]].add((min(a, b), max(a, b)))
 
-used = sorted({s for edge in edges for s in edge})
+used = sorted({s for edges in routes.values() for edge in edges for s in edge})
 index = {s: i for i, s in enumerate(used)}
 data = {
     "stops": [[round(stops[s][0], 4), round(stops[s][1], 4)] for s in used],
-    "edges": sorted([index[a], index[b]] for a, b in edges),
+    "routes": [sorted([index[a], index[b]] for a, b in edges) for _, edges in sorted(routes.items())],
 }
 with open("public/data.json", "w") as f:
     json.dump(data, f, separators=(",", ":"))
-print(f"{len(used)} stops, {len(edges)} edges")
+print(f"{len(used)} stops, {len(routes)} routes")

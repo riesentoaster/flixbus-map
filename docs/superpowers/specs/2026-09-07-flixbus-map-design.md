@@ -11,7 +11,10 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 - Every stop as a small dot.
 - Every pair of consecutive stops on any trip as a straight line (schematic, not
   road geometry). Duplicate segments are merged, direction is ignored.
-- Nothing else: no names, popups, colours, or filtering.
+- Clicking a stop highlights the routes (GTFS `route_id`) that serve it and
+  greys out all others. Clicking another stop moves the focus; clicking
+  anywhere else resets it.
+- Nothing else: no names, popups, or search.
 
 ## Data pipeline
 
@@ -19,17 +22,17 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 
 1. Download the zip into memory.
 2. Read `stops.txt` → id → (lon, lat).
-3. Read `stop_times.txt`, group by `trip_id`, sort by `stop_sequence`.
-4. For each trip, add each consecutive `(stop_a, stop_b)` pair (ordered so a < b)
-   to a set.
-5. Write `public/data.json`:
-   `{"stops": [[lon, lat], ...], "edges": [[i, j], ...]}` where `i`, `j` index
-   into `stops`. Coordinates rounded to 4 decimals. Only stops that appear in an
-   edge are included.
+3. Read `trips.txt` → trip id → route id.
+4. Read `stop_times.txt`, group by `trip_id`, sort by `stop_sequence`.
+5. For each trip, add each consecutive `(stop_a, stop_b)` pair (ordered so a < b)
+   to that route's set of segments.
+6. Write `public/data.json`:
+   `{"stops": [[lon, lat], ...], "routes": [[[i, j], ...], ...]}` where `i`, `j`
+   index into `stops` and each inner list is one route's segments. Coordinates
+   rounded to 4 decimals. Only stops that appear in a segment are included.
 
-Measured on the 2026-09-06 feed: 2,276 stops, 4,673 edges, 90 KB, < 1 s.
-
-`trips.txt` is not needed: `stop_times.txt` already carries the trip id.
+Measured on the 2026-09-06 feed: 2,276 stops, 1,176 routes, 10,914 segments,
+163 KB, < 1 s of processing.
 
 ## Frontend
 
@@ -37,8 +40,12 @@ Measured on the 2026-09-06 feed: 2,276 stops, 4,673 edges, 90 KB, < 1 s.
 
 - Leaflet from cdnjs, OpenStreetMap raster tiles.
 - `L.map(..., {preferCanvas: true})` so thousands of shapes render on canvas.
-- Fetch `data.json`, add one `L.polyline` per edge and one `L.circleMarker` per
-  stop, fit the view to Europe.
+- Fetch `data.json`, add one multi-segment `L.polyline` per route and one
+  `L.circleMarker` per stop, centred on Europe.
+- A `focus(stop)` function recolours every route layer green or grey depending
+  on whether it touches `stop` (`null` = all green). Stop markers call it on
+  click with `bubblingMouseEvents: false` so the map's own click handler, which
+  calls `focus(null)`, does not also fire.
 
 No framework, no bundler, no npm.
 

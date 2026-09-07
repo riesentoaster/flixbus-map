@@ -16,10 +16,23 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-fetch("data.json").then(r => r.json()).then(({ stops, edges }) => {
+fetch("data.json").then(r => r.json()).then(({ stops, routes }) => {
   const latlngs = stops.map(([lon, lat]) => [lat, lon]);
-  L.polyline(edges.map(([a, b]) => [latlngs[a], latlngs[b]]), { color: "#73d700", weight: 1.5 }).addTo(map);
-  for (const p of latlngs) L.circleMarker(p, { radius: 2, color: "#333", weight: 1, fillOpacity: 1 }).addTo(map);
+  const lines = routes.map(edges => L.polyline(edges.map(([a, b]) => [latlngs[a], latlngs[b]]), { weight: 1.5 }).addTo(map));
+
+  // Highlight routes through `stop`; null highlights all.
+  function focus(stop) {
+    routes.forEach((edges, i) => {
+      const hit = stop === null || edges.some(e => e.includes(stop));
+      lines[i].setStyle({ color: hit ? "#73d700" : "#ccc" });
+      if (hit) lines[i].bringToFront();
+    });
+  }
+  focus(null);
+  map.on("click", () => focus(null));
+  latlngs.forEach((p, i) =>
+    L.circleMarker(p, { radius: 2, color: "#333", weight: 1, fillOpacity: 1, bubblingMouseEvents: false })
+      .on("click", () => focus(i)).addTo(map));
 });
 </script>
 </body>
