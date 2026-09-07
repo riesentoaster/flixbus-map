@@ -1,4 +1,6 @@
 {
-  "buildCommand": "python3 build.py",
-  "outputDirectory": "public"
+  "buildCommand": "python3 api/update.py",
+  "outputDirectory": "public",
+  "functions": { "api/update.py": { "maxDuration": 60 } },
+  "rewrites": [{ "source": "/data.json", "destination": "https://STORE_ID.public.blob.vercel-storage.com/data.json" }]
 }
