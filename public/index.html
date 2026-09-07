@@ -27,7 +27,7 @@ fetch("data.json").then(r => r.json()).then(({ stops, routes }) => {
   function focus(stop) {
     routes.forEach((edges, i) => {
       const hit = stop === null || edges.some(e => e.includes(stop));
-      lines[i].setStyle({ color: hit ? "#6a1b9a" : "#999", opacity: hit ? 1 : 0.25 });
+      lines[i].setStyle({ color: hit ? "#6a1b9a" : "#999", opacity: hit ? 1 : 0.25, weight: hit && stop !== null ? 3 : 1.5 });
       if (hit) lines[i].bringToFront();
     });
   }
