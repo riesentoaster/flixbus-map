@@ -19,19 +19,22 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 fetch("data.json").then(r => r.json()).then(({ stops, routes }) => {
   const latlngs = stops.map(([lon, lat]) => [lat, lon]);
   const lines = routes.map(edges => L.polyline(edges.map(([a, b]) => [latlngs[a], latlngs[b]]), { weight: 1.5 }).addTo(map));
+  // Stops live on their own canvas above the routes, so a click always hits the stop, not a line under it.
+  map.createPane("stops").style.zIndex = 450;
+  const stopsRenderer = L.canvas({ pane: "stops", tolerance: 6 }); // 6 px of extra click area around each dot
 
   // Highlight routes through `stop`; null highlights all.
   function focus(stop) {
     routes.forEach((edges, i) => {
       const hit = stop === null || edges.some(e => e.includes(stop));
-      lines[i].setStyle({ color: hit ? "#6a1b9a" : "#aaa" });
+      lines[i].setStyle({ color: hit ? "#6a1b9a" : "#999", opacity: hit ? 1 : 0.25 });
       if (hit) lines[i].bringToFront();
     });
   }
   focus(null);
   map.on("click", () => focus(null));
   latlngs.forEach((p, i) =>
-    L.circleMarker(p, { radius: 2, color: "#333", weight: 1, fillOpacity: 1, bubblingMouseEvents: false })
+    L.circleMarker(p, { renderer: stopsRenderer, radius: 2, color: "#333", weight: 1, fillOpacity: 1, bubblingMouseEvents: false })
       .on("click", () => focus(i)).addTo(map));
 });
 </script>

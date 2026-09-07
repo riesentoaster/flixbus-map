@@ -43,10 +43,14 @@ Measured on the 2026-09-06 feed: 2,276 stops, 1,176 routes, 10,914 segments,
 - `L.map(..., {preferCanvas: true})` so thousands of shapes render on canvas.
 - Fetch `data.json`, add one multi-segment `L.polyline` per route and one
   `L.circleMarker` per stop, centred on Europe.
-- A `focus(stop)` function recolours every route layer purple or grey depending
-  on whether it touches `stop` (`null` = all purple). Stop markers call it on
-  click with `bubblingMouseEvents: false` so the map's own click handler, which
-  calls `focus(null)`, does not also fire.
+- A `focus(stop)` function recolours every route layer purple or faint grey
+  depending on whether it touches `stop` (`null` = all purple) and brings the
+  purple ones to the front. Stop markers call it on click with
+  `bubblingMouseEvents: false` so the map's own click handler, which calls
+  `focus(null)`, does not also fire.
+- Stops are drawn on a separate canvas in their own pane above the routes
+  (Leaflet's canvas hit-test picks the topmost shape, so routes must never sit
+  above stops), with a 6 px click tolerance so the small dots are easy to hit.
 
 No framework, no bundler, no npm.
 
