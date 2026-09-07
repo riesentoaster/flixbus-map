@@ -34,7 +34,7 @@ for trip_id, seq in trips.items():
 used = sorted({s for edges in routes.values() for edge in edges for s in edge})
 index = {s: i for i, s in enumerate(used)}
 data = {
-    "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+    "updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     "stops": [[round(stops[s][0], 4), round(stops[s][1], 4)] for s in used],
     "routes": [sorted([index[a], index[b]] for a, b in edges) for _, edges in sorted(routes.items())],
 }

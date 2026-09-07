@@ -14,8 +14,9 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 - Clicking a stop highlights the routes (GTFS `route_id`) that serve it and
   greys out all others. Clicking another stop moves the focus; clicking
   anywhere else resets it.
-- A small box in the corner shows when the data was built and has an Update
-  button that triggers a rebuild (see Refresh).
+- A small box in the corner shows when the data was built, in the viewer's
+  local time zone, and has an Update button that triggers a rebuild (see
+  Refresh).
 - Nothing else: no names, popups, or search.
 
 ## Data pipeline
@@ -29,7 +30,7 @@ code and the fewest moving parts. Hosted on Vercel's free (Hobby) tier.
 5. For each trip, add each consecutive `(stop_a, stop_b)` pair (ordered so a < b)
    to that route's set of segments.
 6. Write `public/data.json`:
-   `{"updated": "YYYY-MM-DD HH:MM UTC", "stops": [[lon, lat], ...], "routes": [[[i, j], ...], ...]}` where `i`, `j`
+   `{"updated": "<ISO 8601 UTC>", "stops": [[lon, lat], ...], "routes": [[[i, j], ...], ...]}` where `i`, `j`
    index into `stops` and each inner list is one route's segments. Coordinates
    rounded to 4 decimals. Only stops that appear in a segment are included.
 
