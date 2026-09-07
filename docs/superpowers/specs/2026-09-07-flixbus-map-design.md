@@ -84,15 +84,15 @@ No framework, no bundler, no npm.
 ```
 api/update.py       data pipeline: build script + Update function
 public/index.html   the page
+dev.py              local server: public/ + POST /api/update
 vercel.json         build command, function timeout, /data.json -> Blob rewrite
 .gitignore          public/data.json
 ```
 
 ## Testing
 
-Run `python3 api/update.py` locally (writes `public/data.json` when no Blob
-token is set), serve `public/` with any static server, open in a browser. No
-test framework.
+Run `python3 dev.py`, open in a browser, press Update. Without a Blob token
+the update writes `public/data.json`, which `dev.py` serves. No test framework.
 
 ## Deliberately excluded
 

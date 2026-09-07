@@ -13,18 +13,19 @@ Data: the public GTFS feed at https://gtfs.gis.flix.tech/gtfs_generic_eu.zip.
 Requires Python 3. No other dependencies.
 
 ```bash
-python3 api/update.py                  # downloads the feed, writes public/data.json
-python3 -m http.server -d public 8000  # then open http://localhost:8000
+python3 dev.py   # then open http://localhost:8000 and press Update
 ```
 
-Without a Blob token the script writes a local file, so the map works offline
-from Vercel. The Update button does nothing locally (there is no backend).
+`dev.py` serves `public/` and runs the update function behind `POST /api/update`,
+like Vercel does. Without a Blob token the update writes `public/data.json`
+instead of uploading, so everything works without a Vercel account.
 
 ## Files
 
 | File                | Purpose                                                                   |
 |---------------------|---------------------------------------------------------------------------|
 | `public/index.html` | The whole frontend: Leaflet, OpenStreetMap tiles, click handling.         |
+| `dev.py` | Local stand-in for Vercel: static files plus the update function. |
 | `api/update.py` | Downloads the feed and turns it into `data.json`. Run by the build (so every deploy has data) and by the Update button (`POST /api/update`). Stores the result in Vercel Blob. |
 | `vercel.json` | Build command, function timeout, and the rewrite from `/data.json` to the Blob store. |
 
