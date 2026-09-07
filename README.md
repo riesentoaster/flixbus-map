@@ -22,8 +22,8 @@ python3 -m http.server -d public 8000  # then open http://localhost:8000
 |---------------------|---------------------------------------------------------------------------|
 | `build.py`          | Turns the GTFS feed into `public/data.json` (stops + per-route segments). |
 | `public/index.html` | The whole frontend: Leaflet, OpenStreetMap tiles, click handling.         |
-| `api/cron.py`       | Serverless function that triggers a redeploy via a Vercel deploy hook.    |
-| `vercel.json`       | Build command, output directory, daily cron schedule.                     |
+| `api/update.py` | Serverless function behind the Update button; triggers a redeploy via a Vercel deploy hook. |
+| `vercel.json` | Build command and output directory. |
 
 `public/data.json` is generated and not committed.
 
