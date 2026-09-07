@@ -1,5 +1,7 @@
 # FlixBus route map
 
+> Disclaimer: This entire thing is vibe coded using Claude Fable 5.1.
+
 A single-page map of every FlixBus and FlixTrain stop in Europe, with straight
 lines between consecutive stops. Click a stop to highlight the routes that serve
 it; click anywhere else to reset. The selected stop is kept in the URL
@@ -22,12 +24,12 @@ instead of uploading, so everything works without a Vercel account.
 
 ## Files
 
-| File                | Purpose                                                                   |
-|---------------------|---------------------------------------------------------------------------|
-| `public/index.html` | The whole frontend: Leaflet, OpenStreetMap tiles, click handling.         |
-| `dev.py` | Local stand-in for Vercel: static files plus the update function. |
-| `api/update.py` | Downloads the feed and turns it into `data.json`. Run by the build (so every deploy has data) and by the Update button (`POST /api/update`). Stores the result in Vercel Blob. |
-| `vercel.json` | Build command, function timeout, and the rewrite from `/data.json` to the Blob store. |
+| File                | Purpose                                                                                                                                                                        |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `public/index.html` | The whole frontend: Leaflet, OpenStreetMap tiles, click handling.                                                                                                              |
+| `dev.py`            | Local stand-in for Vercel: static files plus the update function.                                                                                                              |
+| `api/update.py`     | Downloads the feed and turns it into `data.json`. Run by the build (so every deploy has data) and by the Update button (`POST /api/update`). Stores the result in Vercel Blob. |
+| `vercel.json`       | Build command, function timeout, and the rewrite from `/data.json` to the Blob store.                                                                                          |
 
 `public/data.json` is generated and not committed.
 
